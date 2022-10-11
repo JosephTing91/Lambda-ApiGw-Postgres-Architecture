@@ -1,18 +1,10 @@
-# Build and Release Folders
-bin-debug/
-bin-release/
-[Oo]bj/
-[Bb]in/
+C:/Users/"Maitri WInd"/Downloads/Serverless_Archi/Project-1/.terraform/
+terraform-provider-aws_v4.24.0_x5.exe
+*.log
+*.tfvars
 
-# Other files and folders
-.settings/
+#use git rm cache to get rid of the big file from the commit
 
-# Executables
-*.swf
-*.air
-*.ipa
-*.apk
+#git rm --Project-1/.terraform/providers/registry.terraform.io/hashicorp/aws/4.24.0/windows_amd64/terraform-provider-aws_v4.24.0_x5.exe
 
-# Project files, i.e. `.project`, `.actionScriptProperties` and `.flexProperties`
-# should NOT be excluded as they contain compiler settings and other important
-# information for Eclipse / Flash Builder.
+#Project-1/.terraform/providers/registry.terraform.io/hashicorp/aws/4.24.0/windows_amd64/terraform-provider-aws_v4.24.0_x5.exe
