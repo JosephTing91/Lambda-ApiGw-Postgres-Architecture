@@ -1,0 +1,22 @@
+
+
+TF_LOG --> TRACE, DEBUG, INFO, WARN or ERROR
+
+
+*run below two lines of code in command to create env variables.
+
+export TF_LOG=TRACE
+
+export TF_LOG_PATH=C:/Users/"Maitri WInd"/Downloads/Serverless_Archi/logs/trace.log 
+
+
+#############
+
+terraform fmt
+
+############
+
+terraform validate
+
+############
+
