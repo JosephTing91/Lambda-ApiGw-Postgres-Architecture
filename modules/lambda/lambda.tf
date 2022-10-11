@@ -6,6 +6,12 @@ data "archive_file" "zip" {
 }
 
 
+resource "aws_lambda_layer_version" "psycopg2_layer" {
+  filename   = "../Project-1/psycopg2.zip"
+  layer_name = "psycopg2"
+  compatible_runtimes = [var.lambda_runtime]
+}
+
 resource "aws_iam_role" "iam_for_app_lambda" {
   name = "iam_for_app_lambda"
 
@@ -25,6 +31,16 @@ resource "aws_iam_role" "iam_for_app_lambda" {
 }
 EOF
 }
+
+
+
+
+
+resource "aws_iam_role_policy_attachment" "app_lambda_vpc_role_attachment" {
+  role       = aws_iam_role.iam_for_app_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
 resource "aws_lambda_function" "app_lambda" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
@@ -37,7 +53,7 @@ resource "aws_lambda_function" "app_lambda" {
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = "${data.archive_file.zip.output_base64sha256}" 
-  runtime = "python3.8"
+  runtime = var.lambda_runtime
 
   environment {
     variables = {
@@ -46,9 +62,7 @@ resource "aws_lambda_function" "app_lambda" {
   }
 }
 
-
 #create lambda function to delete from table
-
 
 data "archive_file" "zip_delete" {
     type        = "zip"
@@ -56,7 +70,6 @@ data "archive_file" "zip_delete" {
     output_path = "delete_function.zip" 
 
 }
-
 
 resource "aws_iam_role" "iam_for_delete_lambda" {
   name = "iam_for_delete_lambda"
@@ -77,6 +90,13 @@ resource "aws_iam_role" "iam_for_delete_lambda" {
 }
 EOF
 }
+
+resource "aws_iam_role_policy_attachment" "delete_lambda_vpc_role_attachment" {
+  role       = aws_iam_role.iam_for_delete_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
+}
+
+
 resource "aws_lambda_function" "delete_lambda" {
   # If the file is not in the current working directory you will need to include a
   # path.module in the filename.
@@ -89,7 +109,12 @@ resource "aws_lambda_function" "delete_lambda" {
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = "${data.archive_file.zip_delete.output_base64sha256}" 
-  runtime = "python3.8"
+  runtime = var.lambda_runtime
+  layers = [aws_lambda_layer_version.psycopg2_layer.arn]
+  vpc_config {
+    subnet_ids         = [var.privsubnet1_id, var.privsubnet2_id ]
+    security_group_ids = [var.sg_id_lambda]
+  }
 
   environment {
     variables = {

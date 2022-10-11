@@ -120,3 +120,50 @@ resource "aws_route_table_association" "Priv-sub-4-ass" {
   subnet_id      = aws_subnet.priv-subnet-4.id
   route_table_id = aws_route_table.Private_route_table.id
 }
+
+
+resource "aws_default_network_acl" "default_network_acl" {
+  default_network_acl_id = aws_vpc.vpc.default_network_acl_id
+  subnet_ids             = [aws_subnet.pub-subnet-1.id, aws_subnet.pub-subnet-2.id, aws_subnet.priv-subnet-1.id, aws_subnet.priv-subnet-2.id, aws_subnet.priv-subnet-3.id, aws_subnet.priv-subnet-4.id]
+
+  ingress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  egress {
+    protocol   = -1
+    rule_no    = 100
+    action     = "allow"
+    cidr_block = "0.0.0.0/0"
+    from_port  = 0
+    to_port    = 0
+  }
+
+  tags = {
+    Name = "default-network-acl"
+  }
+}
+
+resource "aws_default_security_group" "default_security_group" {
+  vpc_id = aws_vpc.vpc.id
+
+  ingress {
+    protocol  = -1
+    self      = true
+    from_port = 0
+    to_port   = 0
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+    # cidr_blocks = ["127.0.0.1/32"]
+  }
+}

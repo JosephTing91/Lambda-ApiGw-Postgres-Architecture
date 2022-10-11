@@ -3,6 +3,7 @@ variable "privsubnet3_id"{
 variable "privsubnet4_id"{
 }
 
+
 variable "db_username"{
   description = "Database administrator username"
   type        = string
@@ -33,3 +34,4 @@ resource "aws_db_instance" "default" {
   password             = var.db_password
   skip_final_snapshot  = true
 }
+
