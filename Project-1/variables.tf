@@ -2,6 +2,7 @@ variable "vpc_name_tag" {}
 variable "cidr_blocks" {}
 variable "own_ip" {}
 variable "instance_type" {}
+variable "db_port" {}
 variable "ec2_role" {}
 variable "key_name" {
   type = string

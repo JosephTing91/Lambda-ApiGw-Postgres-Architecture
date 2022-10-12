@@ -7,7 +7,7 @@ TF_LOG --> TRACE, DEBUG, INFO, WARN or ERROR
 
 export TF_LOG=TRACE
 
-export TF_LOG_PATH=C:/Users/"Maitri WInd"/Downloads/Serverless_Archi/logs/trace.log 
+export TF_LOG_PATH=C:/Users/"Maitri WInd"/Downloads/LAMBDA-APIGW-POSTGRES-ARCHITECTURE/logs/trace.log 
 
 
 #############

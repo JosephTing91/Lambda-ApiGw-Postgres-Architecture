@@ -2,14 +2,16 @@ variable "sg_id_lambda" {
 
 }
 
-variable "privsubnet1_id" {
+# variable "sg_id_default" {
+# }
 
+
+
+variable "privsubnet1_id" {
 }
 
 variable "privsubnet2_id" {
-
 }
 
 variable "lambda_runtime" {
-
 }

@@ -3,7 +3,7 @@ import pymysql
 import boto3
 import logging
 import sys
-from datetime import date, timedelta
+from datetime import date
 
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
@@ -17,11 +17,15 @@ today=date.today()
 conn=pymysql.connect(host=rds_host, user=name, passwd=password, db=db_name, connect_timeout=20)
 
 def lambda_handler(event, context):
-    today=date.today()
-    
     with conn.cursor() as cur:
-        cur.execute("Delete from Apptable where DATEDIFF(%s, input_date)=0",(today))
-        conn.commit()
-        for row in cur:
+        cur.execute("select * from Employee3")
+        rows=cur.fetchall()
+        for row in rows:
             print(row)
     conn.commit()
+
+
+
+
+
+        cur.execute("create table Employee5 ( EmpID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (EmpID))")

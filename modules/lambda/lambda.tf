@@ -6,9 +6,9 @@ data "archive_file" "zip" {
 }
 
 
-resource "aws_lambda_layer_version" "psycopg2_layer" {
-  filename   = "../Project-1/psycopg2.zip"
-  layer_name = "psycopg2"
+resource "aws_lambda_layer_version" "pymysql_layer" {
+  filename   = "../Project-1/python.zip"
+  layer_name = "pymysql"
   compatible_runtimes = [var.lambda_runtime]
 }
 
@@ -54,7 +54,11 @@ resource "aws_lambda_function" "app_lambda" {
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = "${data.archive_file.zip.output_base64sha256}" 
   runtime = var.lambda_runtime
-
+  layers = [aws_lambda_layer_version.pymysql_layer.arn]
+  vpc_config {
+    subnet_ids         = [var.privsubnet1_id, var.privsubnet2_id ]
+    security_group_ids = [var.sg_id_lambda]
+  }
   environment {
     variables = {
       foo = "bar"
@@ -110,7 +114,7 @@ resource "aws_lambda_function" "delete_lambda" {
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
   source_code_hash = "${data.archive_file.zip_delete.output_base64sha256}" 
   runtime = var.lambda_runtime
-  layers = [aws_lambda_layer_version.psycopg2_layer.arn]
+  layers = [aws_lambda_layer_version.pymysql_layer.arn]
   vpc_config {
     subnet_ids         = [var.privsubnet1_id, var.privsubnet2_id ]
     security_group_ids = [var.sg_id_lambda]

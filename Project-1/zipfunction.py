@@ -1,6 +1,6 @@
 import shutil
 
-shutil.make_archive('psycopg2', 'zip', 'psycopg2')
+shutil.make_archive('python', 'zip', 'python')
 
 
 

@@ -1,4 +1,6 @@
 #this program is for creating a table in mysql and 
+
+
 import json
 import pymysql
 import boto3
