@@ -1,29 +1,26 @@
-resource "aws_kms_key" "secrets_kms_key"{
-  description= "key for encrypting db secrets "
-
-}
 
 
-resource "aws_ssm_parameter" "db_endpoint" {
-  name  = "db_endpoint"
-  type  = "SecureString"
-  value = aws_db_instance.default.endpoint
-  key_id=aws_kms_key.secrets_kms_key.key_id
-}
 
-resource "aws_ssm_parameter" "db_password" {
-  name  = "db_password"
-  type  = "SecureString"
-  value = var.db_password
-  key_id=aws_kms_key.secrets_kms_key.key_id
-}
+# resource "aws_ssm_parameter" "db_endpoint" {
+#   name  = "db_endpoint"
+#   type  = "SecureString"
+#   value = aws_db_instance.default.endpoint
+#   key_id=aws_kms_key.secrets_kms_key.key_id
+# }
 
-resource "aws_ssm_parameter" "db_username" {
-  name  = "db_username"
-  type  = "SecureString"
-  value = var.db_username
-  key_id=aws_kms_key.secrets_kms_key.key_id
-}
+# resource "aws_ssm_parameter" "db_password" {
+#   name  = "db_password"
+#   type  = "SecureString"
+#   value = var.db_password
+#   key_id=aws_kms_key.secrets_kms_key.key_id
+# }
+
+# resource "aws_ssm_parameter" "db_username" {
+#   name  = "db_username"
+#   type  = "SecureString"
+#   value = var.db_username
+#   key_id=aws_kms_key.secrets_kms_key.key_id
+# }
 
 resource "aws_db_subnet_group" "subnetgroup" {
   name       = "subnetgroup"

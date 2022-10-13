@@ -1,11 +1,5 @@
 #read in pythons cripts for app and delete functions
 
-
-# name='joseph'
-# password='ting1234'
-# db_name='mydb'
-
-
 data "archive_file" "zip" {
     type        = "zip"
     source_file = "user_uploads.py"
@@ -19,8 +13,6 @@ data "archive_file" "zip_delete" {
     output_path = "delete_function.zip" 
 
 }
-
-
 
 #import pymysql lambda layer
 resource "aws_lambda_layer_version" "pymysql_layer" {
@@ -57,11 +49,28 @@ resource "aws_iam_policy" "decrypt_kms_policy" {
           "kms:Get*"
         ],
         Effect : "Allow",
-        Resource : var.secret_kms_keyArn
+        Resource : [var.secret_kms_keyArn, var.db_secrets_arn]
       }
     ]
   })
 }
+
+resource "aws_iam_policy" "get_secret_policy" {
+  name   = "get-secret-policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        Action : [
+        "secretsmanager:GetSecretValue"
+        ],
+        Effect : "Allow",
+        Resource : var.db_secrets_arn
+      }
+    ]
+  })
+}
+
 
 resource "aws_iam_policy" "get_parameters_policy" {
   name   = "get-parameters-policy"
@@ -126,6 +135,13 @@ resource "aws_iam_role_policy_attachment" "app_lambda_role_decrypt" {
 }
 
 
+resource "aws_iam_role_policy_attachment" "app_lambda_role_getsecret" {
+  role       = aws_iam_role.iam_for_app_lambda.name
+  policy_arn = aws_iam_policy.get_secret_policy.arn
+}
+
+
+
 
 #iam role for delete function
 resource "aws_iam_role" "iam_for_delete_lambda" {
@@ -170,6 +186,12 @@ resource "aws_iam_role_policy_attachment" "delete_lambda_role_decrypt" {
 }
 
 
+resource "aws_iam_role_policy_attachment" "delete_lambda_role_getsecret" {
+  role       = aws_iam_role.iam_for_delete_lambda.name
+  policy_arn = aws_iam_policy.get_secret_policy.arn
+}
+
+
 #create lambda for app 
 
 resource "aws_lambda_function" "app_lambda" {
@@ -177,7 +199,7 @@ resource "aws_lambda_function" "app_lambda" {
   function_name = "user_uploads"
   role          = aws_iam_role.iam_for_app_lambda.arn
   handler       = "user_uploads.lambda_handler"
-
+  timeout       =  300
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"
@@ -205,7 +227,7 @@ resource "aws_lambda_function" "delete_lambda" {
   function_name = "delete_function"
   role          = aws_iam_role.iam_for_delete_lambda.arn
   handler       = "delete_function.lambda_handler"
-
+  timeout       =  300
   # The filebase64sha256() function is available in Terraform 0.11.12 and later
   # For Terraform 0.11.11 and earlier, use the base64sha256() function and the file() function:
   # source_code_hash = "${base64sha256(file("lambda_function_payload.zip"))}"

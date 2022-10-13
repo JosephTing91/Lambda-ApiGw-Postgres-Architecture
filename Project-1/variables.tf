@@ -7,7 +7,7 @@ variable "ec2_role" {}
 variable "key_name" {
   type = string
 }
-variable "ssm_kms_arn"{
+variable "sm_kms_arn"{
   
 }
 variable "db_storage_min"{

@@ -1,4 +1,3 @@
-
 #this program is for creating a table in mysql and 
 import json
 import pymysql
@@ -29,28 +28,43 @@ get_secret_value_response = client.get_secret_value(
 
 if 'SecretString' in get_secret_value_response:
     secret = get_secret_value_response['SecretString']
-    # print(secret)
-    decryptedkeys=json.loads(secret)  # returns the secret as dictionary  
-    name=decryptedkeys['username']
-    password=decryptedkeys['password']
-    rds_host=decryptedkeys['host']
 
+    print(secret)
+    
+    print(secret['username'])
+#     print(decryptedkeys['password'])
+#     print(decryptedkeys['host']) 
+
+# db_name='mydb'
+# today=date.today()
+
+
+# name=decryptedkeys['username']
+# password=decryptedkeys['password']
+# rds_host=decryptedkeys['host']
+
+name='joseph'
+password='ting1234'
+rds_host='terraform-20221013202751624700000007.cggdpmo6alkj.us-east-1.rds.amazonaws.com'
 db_name='mydb'
+
+conn=pymysql.connect(host=rds_host, user=name, passwd=password, db=db_name, connect_timeout=20)
+
 today=date.today()
+
 conn=pymysql.connect(host=rds_host, user=name, passwd=password, db=db_name, connect_timeout=20)
 
 def lambda_handler(event, context):
 
     name="joe"
-    userid=113244122234534321589987
+    userid=9811123113
     today=date.today()
     
     with conn.cursor() as cur:
-
-        cur.execute("create table Apptable5 ( UserID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (UserID))")
-        cur.execute('insert into Apptable5 (UserID, Name, input_date) values(%s, %s, %s)', (userid, name, today))
+        # cur.execute("create table Apptable ( UserID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (UserID))")
+        cur.execute('insert into Apptable (UserID, Name, input_date) values(%s, %s, %s)', (userid, name, today))
         conn.commit()
-        cur.execute("select * from Apptable5")
+        cur.execute("select * from Apptable")
         for row in cur:
             logger.info(row)
             print(row)

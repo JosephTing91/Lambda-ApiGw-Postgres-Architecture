@@ -23,12 +23,14 @@ module "lambda" {
   privsubnet1_id=module.vpc.privsubnet1_id
   privsubnet2_id=module.vpc.privsubnet2_id
   secret_kms_keyArn=module.db.secret_kms_keyArn
-  db_pass_arn=module.db.db_pass_arn
-  db_user_arn=module.db.db_user_arn
-  db_endpoint_arn=module.db.db_endpoint_arn
+  
+  db_secrets_arn=module.db.db_secrets_arn
+  # db_pass_arn=module.db.db_pass_arn
+  # db_user_arn=module.db.db_user_arn
+  # db_endpoint_arn=module.db.db_endpoint_arn
   # sg_id_default=module.sgs.sg_id_default
   sg_id_lambda=module.sgs.sg_id_lambda 
-  ssm_kms_arn=var.ssm_kms_arn
+  sm_kms_arn=var.sm_kms_arn
   lambda_runtime=var.lambda_runtime
 }
 
@@ -50,6 +52,8 @@ module "db" {
  db_instance_class=var.db_instance_class
  db_storage_min=var.db_storage_min
  db_storage_max=var.db_storage_max
+ sm_kms_arn=var.sm_kms_arn
+
  dbsg_id=module.sgs.dbsg_id
  log_retention=var.log_retention
  db_engine=var.db_engine
