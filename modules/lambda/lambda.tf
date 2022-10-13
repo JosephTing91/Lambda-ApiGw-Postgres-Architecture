@@ -1,6 +1,10 @@
 #read in pythons cripts for app and delete functions
 
 
+# name='joseph'
+# password='ting1234'
+# db_name='mydb'
+
 
 data "archive_file" "zip" {
     type        = "zip"
@@ -49,15 +53,33 @@ resource "aws_iam_policy" "decrypt_kms_policy" {
     "Statement" : [
       {
         Action : [
-          "kms:Decrypt"
+          "kms:Decrypt",
+          "kms:Get*"
         ],
         Effect : "Allow",
-        Resource : var.ssm_kms_arn
+        Resource : var.secret_kms_keyArn
       }
     ]
   })
 }
 
+resource "aws_iam_policy" "get_parameters_policy" {
+  name   = "get-parameters-policy"
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        Action : [
+          "ssm:*"
+        ],
+        Effect : "Allow",
+        Resource : "*"
+      }
+    ]
+  })
+}
+#        "ssm:GetParameters"
+#[var.db_pass_arn, var.db_user_arn, var.db_endpoint_arn]
 
 
 resource "aws_iam_role" "iam_for_app_lambda" {
@@ -91,6 +113,16 @@ resource "aws_iam_role_policy_attachment" "app_lambda_vpc_role_attachment" {
 resource "aws_iam_role_policy_attachment" "app_lambda_role_logging" {
   role       = aws_iam_role.iam_for_app_lambda.name
   policy_arn = aws_iam_policy.function_logging_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "app_lambda_role_getparam" {
+  role       = aws_iam_role.iam_for_app_lambda.name
+  policy_arn = aws_iam_policy.get_parameters_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "app_lambda_role_decrypt" {
+  role       = aws_iam_role.iam_for_app_lambda.name
+  policy_arn = aws_iam_policy.decrypt_kms_policy.arn
 }
 
 
@@ -127,6 +159,15 @@ resource "aws_iam_role_policy_attachment" "delete_lambda_role_logging" {
   policy_arn = aws_iam_policy.function_logging_policy.arn
 }
 
+resource "aws_iam_role_policy_attachment" "delete_lambda_role_getparam" {
+  role       = aws_iam_role.iam_for_delete_lambda.name
+  policy_arn = aws_iam_policy.get_parameters_policy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "delete_lambda_role_decrypt" {
+  role       = aws_iam_role.iam_for_delete_lambda.name
+  policy_arn = aws_iam_policy.decrypt_kms_policy.arn
+}
 
 
 #create lambda for app 
@@ -154,6 +195,7 @@ resource "aws_lambda_function" "app_lambda" {
     }
   }
 }
+
 
 
 #create lambda function to delete old records from table

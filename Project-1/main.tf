@@ -22,12 +22,18 @@ module "lambda" {
   source = "../Modules/lambda"
   privsubnet1_id=module.vpc.privsubnet1_id
   privsubnet2_id=module.vpc.privsubnet2_id
+  secret_kms_keyArn=module.db.secret_kms_keyArn
+  db_pass_arn=module.db.db_pass_arn
+  db_user_arn=module.db.db_user_arn
+  db_endpoint_arn=module.db.db_endpoint_arn
   # sg_id_default=module.sgs.sg_id_default
   sg_id_lambda=module.sgs.sg_id_lambda 
   ssm_kms_arn=var.ssm_kms_arn
   lambda_runtime=var.lambda_runtime
 }
-cd .
+
+
+
 
 
 module "apigw" {

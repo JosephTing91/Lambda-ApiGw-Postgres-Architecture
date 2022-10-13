@@ -9,6 +9,7 @@ from datetime import date
 logger = logging.getLogger()
 logger.setLevel(logging.INFO)
 
+
 ssm=boto3.client('ssm', 'us-east-1')
 
 password = ssm.get_parameter(
@@ -29,12 +30,12 @@ rds_host=ssm.get_parameter(
 db_name='mydb'
 today=date.today()
 
+
 conn=pymysql.connect(host=rds_host, user=name, passwd=password, db=db_name, connect_timeout=20)
 
 def lambda_handler(event, context):
-
     name="joe"
-    userid=11
+    userid=11989
     today=date.today()
     
     with conn.cursor() as cur:
@@ -46,5 +47,3 @@ def lambda_handler(event, context):
             logger.info(row)
             print(row)
     conn.commit()
-
-#        cur.execute("create table Apptable ( UserID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (UserID))")

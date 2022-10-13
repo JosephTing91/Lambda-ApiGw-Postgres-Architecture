@@ -42,19 +42,11 @@ resource "aws_api_gateway_account" "api_gateway_account" {
   cloudwatch_role_arn = aws_iam_role.api_gateway_account_role.arn
 }
 
-
 resource "aws_api_gateway_rest_api" "apiLambda" {
   name        = "myAPI"
 }
 
 
-
-
-resource "aws_api_gateway_stage" "prodstage" {
-  deployment_id = aws_api_gateway_deployment.apideploy.id
-  rest_api_id   = aws_api_gateway_rest_api.apiLambda.id
-  stage_name    = "prod"
-}
 
 resource "aws_api_gateway_resource" "proxy" {
    rest_api_id = aws_api_gateway_rest_api.apiLambda.id
@@ -103,15 +95,21 @@ resource "aws_api_gateway_deployment" "apideploy" {
      aws_api_gateway_integration.lambda_root,
    ]
    rest_api_id = aws_api_gateway_rest_api.apiLambda.id
+}
 
+
+
+resource "aws_api_gateway_stage" "prodstage" {
+  deployment_id = aws_api_gateway_deployment.apideploy.id
+  rest_api_id   = aws_api_gateway_rest_api.apiLambda.id
+  stage_name    = "prod"
 }
 
 #methods
 resource "aws_api_gateway_method_settings" "api_method_settings" {
   rest_api_id = aws_api_gateway_rest_api.apiLambda.id
-  stage_name  = "prod"
+  stage_name  = aws_api_gateway_stage.prodstage.stage_name
   method_path = "*/*"
-  
   settings {
     metrics_enabled = true
     logging_level   = "INFO"
