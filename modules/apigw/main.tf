@@ -1,5 +1,59 @@
+resource "aws_iam_role" "api_gateway_account_role" {
+  name = "api-gateway-account-role"
+  assume_role_policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Sid" : "",
+        "Effect" : "Allow",
+        "Principal" : {
+          "Service" : "apigateway.amazonaws.com"
+        },
+        "Action" : "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "api_gateway_cloudwatch_policy" {
+  name = "api-gateway-cloudwatch-policy"
+  role = aws_iam_role.api_gateway_account_role.id
+  policy = jsonencode({
+    "Version" : "2012-10-17",
+    "Statement" : [
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams",
+          "logs:PutLogEvents",
+          "logs:GetLogEvents",
+          "logs:FilterLogEvents"
+        ],
+        "Resource" : "*"
+      }
+    ]
+  })
+}
+
+resource "aws_api_gateway_account" "api_gateway_account" {
+  cloudwatch_role_arn = aws_iam_role.api_gateway_account_role.arn
+}
+
+
 resource "aws_api_gateway_rest_api" "apiLambda" {
   name        = "myAPI"
+}
+
+
+
+
+resource "aws_api_gateway_stage" "prodstage" {
+  deployment_id = aws_api_gateway_deployment.apideploy.id
+  rest_api_id   = aws_api_gateway_rest_api.apiLambda.id
+  stage_name    = "prod"
 }
 
 resource "aws_api_gateway_resource" "proxy" {
@@ -14,8 +68,6 @@ resource "aws_api_gateway_method" "proxyMethod" {
    http_method   = "ANY"
    authorization = "NONE"
 }
-
-
 
 
 resource "aws_api_gateway_integration" "lambda" {
@@ -35,7 +87,6 @@ resource "aws_api_gateway_method" "proxy_root" {
    authorization = "NONE"
 }
 
-
 resource "aws_api_gateway_integration" "lambda_root" {
    rest_api_id = aws_api_gateway_rest_api.apiLambda.id
    resource_id = aws_api_gateway_method.proxy_root.resource_id
@@ -46,16 +97,28 @@ resource "aws_api_gateway_integration" "lambda_root" {
    uri                     = var.app_lambda_uri
 }
 
-
-
 resource "aws_api_gateway_deployment" "apideploy" {
    depends_on = [
      aws_api_gateway_integration.lambda,
      aws_api_gateway_integration.lambda_root,
    ]
    rest_api_id = aws_api_gateway_rest_api.apiLambda.id
-   stage_name  = "test"
+
 }
+
+#methods
+resource "aws_api_gateway_method_settings" "api_method_settings" {
+  rest_api_id = aws_api_gateway_rest_api.apiLambda.id
+  stage_name  = "prod"
+  method_path = "*/*"
+  
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+    caching_enabled= true
+  }
+}
+
 
 
 resource "aws_lambda_permission" "apigw" {

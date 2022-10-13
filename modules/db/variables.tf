@@ -1,15 +1,11 @@
-variable "vpc_name_tag" {}
-variable "cidr_blocks" {}
-variable "own_ip" {}
-variable "instance_type" {}
-variable "db_port" {}
-variable "ec2_role" {}
-variable "key_name" {
-  type = string
+variable "privsubnet3_id"{
 }
-variable "ssm_kms_arn"{
-  
+variable "privsubnet4_id"{
 }
+
+variable "dbsg_id"{
+}
+
 variable "db_storage_min"{
 }
 variable "db_storage_max"{
@@ -17,24 +13,13 @@ variable "db_storage_max"{
 
 variable "db_instance_class"{
 }
+
 variable "log_retention"{
 }
 variable "db_engine"{
 }
 variable "db_engine_version"{
 }
-
-
-variable "lambda_runtime" {
-  type= string
-
-}
-
-
-variable "region" {
-  type = string
-}
-
 variable "db_username"{
   description = "Database administrator username"
   type        = string
@@ -46,4 +31,3 @@ variable "db_password"{
   type        = string
   sensitive   = true
 }
-

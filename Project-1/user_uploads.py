@@ -20,15 +20,19 @@ conn=pymysql.connect(host=rds_host, user=name, passwd=password, db=db_name, conn
 def lambda_handler(event, context):
 
     name="joe"
-    employeeid=1
+    userid=11
     today=date.today()
     
     with conn.cursor() as cur:
-        cur.execute("create table Apptable ( UserID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (EmpID))")
-        cur.execute('insert into Apptable (UserID, Name, input_date) values(%s, %s, %s)', (employeeid, name, today))
+
+        cur.execute('insert into Apptable (UserID, Name, input_date) values(%s, %s, %s)', (userid, name, today))
         conn.commit()
         cur.execute("select * from Apptable")
         for row in cur:
             logger.info(row)
             print(row)
     conn.commit()
+
+
+
+            cur.execute("create table Apptable ( UserID  int NOT NULL, Name varchar(255) NOT NULL, input_date DATE, PRIMARY KEY (UserID))")

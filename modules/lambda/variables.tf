@@ -1,3 +1,5 @@
+variable "ssm_kms_arn"{ 
+}
 variable "sg_id_lambda" {
 
 }

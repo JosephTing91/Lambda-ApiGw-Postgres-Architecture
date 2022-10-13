@@ -24,8 +24,10 @@ module "lambda" {
   privsubnet2_id=module.vpc.privsubnet2_id
   # sg_id_default=module.sgs.sg_id_default
   sg_id_lambda=module.sgs.sg_id_lambda 
+  ssm_kms_arn=var.ssm_kms_arn
   lambda_runtime=var.lambda_runtime
 }
+cd .
 
 
 module "apigw" {
@@ -34,15 +36,21 @@ module "apigw" {
   app_lambda_name = module.lambda.app_lambda_name
 }
 
+
 module "db" {
  source="../Modules/db"
  db_username=var.db_username
  db_password=var.db_password
+ db_instance_class=var.db_instance_class
+ db_storage_min=var.db_storage_min
+ db_storage_max=var.db_storage_max
  dbsg_id=module.sgs.dbsg_id
+ log_retention=var.log_retention
+ db_engine=var.db_engine
+ db_engine_version=var.db_engine_version
  privsubnet3_id= module.vpc.privsubnet3_id
  privsubnet4_id= module.vpc.privsubnet4_id  
 }
-
 
 
 
